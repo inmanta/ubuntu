@@ -42,35 +42,39 @@ class UbuntuService(ResourceHandler):
             # new style (upstart)
             boot_config = self._io.run("/sbin/initctl", ["show-config", resource.name])[0]
             current.onboot = "start on " in boot_config
-                
-            
+
+
             exists = self._io.run("/sbin/status", [resource.name])
             if "start" in exists[0] or "running" in exists[0]:
                 current.state = "running"
             else:
                 current.state = "stopped"
-        
+
             style = "upstart"
-        
+
         elif self._io.file_exists("/etc/init.d/%s" % resource.name):
             # old style
             current.onboot = "already exist" in self._io.run("/usr/sbin/update-rc.d", ["-n", resource.name, "defaults"])[0]
-            
+
             if self._io.run("/etc/init.d/%s" % resource.name, ["status"])[2] == 0:
                 current.state = "running"
             else:
                 current.state = "stopped"
-            
+
             style = "init"
         else:
             raise ResourceNotFoundExcpetion("The %s service does not exist" % resource.name)
 
         return style, current
 
-    def list_changes(self, desired):
+    def _list_changes(self, desired):
         style, current = self.check_resource(desired)
         changes = self._diff(current, desired)
         return style, changes
+
+    def list_changes(self, desired):
+        style, changes = self._list_changes(desired)
+        return changes
 
     def can_reload(self):
         """
@@ -85,7 +89,7 @@ class UbuntuService(ResourceHandler):
         self._io.run("/sbin/restart", [resource.name])
 
     def do_changes(self, resource):
-        style, changes = self.list_changes(resource)
+        style, changes = self._list_changes(resource)
         changed = False
 
         # update-rc.d foobar defaults
@@ -101,8 +105,8 @@ class UbuntuService(ResourceHandler):
                 result = self._io.run("/sbin/%s" % action, [resource.name])
                 if result[2] > 0:
                     raise Exception("Unable to %s %s: %s" % (action, resource.name, result[1]))
-                
-            elif style == "init": 
+
+            elif style == "init":
                 result = self._io.run("/etc/init.d/%s" % resource.name, [action])
                 if result[2] > 0:
                     raise Exception("Unable to %s %s: %s" % (action, resource.name, result[1]))
@@ -111,16 +115,16 @@ class UbuntuService(ResourceHandler):
 
         if "onboot" in changes and changes["onboot"][0] != changes["onboot"][1]:
             onboot = changes["onboot"][1]
-                
+
             if style == "upstart":
                 LOGGER.warn("Enabling or disabling boot for upstart jobs not supported")
-                
+
             elif style == "init":
                 if onboot:
                     self._io.run("/usr/sbin/update-rc.d", [resource.name, "defaults"])
                 else:
                     self._io.run("/usr/sbin/update-rc.d", ["-f", resource.name, "remove"])
-                
+
                 changed = True
 
         return changed

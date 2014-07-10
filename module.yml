@@ -1,8 +1,7 @@
-name: collectd
-version: 0.1.1
-source: git@github.com:bartv/imp-collectd
+name: ubuntu
+version: 0.1.2
+source: git@github.com:bartv/imp-ubuntu
 license: Apache 2.0
 author: Bart Vanbrabant <bart.vanbrabant@cs.kuleuven.be>
 requires:
     std: git@github.com:bartv/imp-std, ">= 0.1"
-    ip: git@github.com:bartv/imp-ip, ">= 0.1"

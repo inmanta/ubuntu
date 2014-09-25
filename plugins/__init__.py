@@ -31,9 +31,8 @@ class UbuntuService(ResourceHandler):
     """
         A handler for services on systems that use upstart
     """
-    @classmethod
-    def is_available(self, io):
-        return io.file_exists("/usr/lib/upstart") or io.file_exists("/usr/sbin/update-rc.d")
+    def available(self, resource):
+        return self._io.file_exists("/usr/lib/upstart") or self._io.file_exists("/usr/sbin/update-rc.d")
 
     def check_resource(self, resource):
         current = resource.clone()
@@ -136,9 +135,8 @@ class AptPackage(ResourceHandler):
 
         TODO: add latest support
     """
-    @classmethod
-    def is_available(self, io):
-        return (io.file_exists("/usr/bin/dpkg")) and io.file_exists("/usr/bin/apt-get")
+    def available(self, resource):
+        return (self._io.file_exists("/usr/bin/dpkg")) and self._io.file_exists("/usr/bin/apt-get")
 
     def check_resource(self, resource):
         dpkg_output = self._io.run("/usr/bin/dpkg", ["-s", resource.name])

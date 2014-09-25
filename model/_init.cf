@@ -17,10 +17,10 @@
     Technical Contact: bart.vanbrabant@cs.kuleuven.be
 """
 
-enum std::os with parent "linux" as "ubuntu"
+ubuntu = std::OS(name = "ubuntu", family = std::linux)
 
-enum std::os with parent "ubuntu" as "ubuntu-12.04"
-enum std::os with parent "ubuntu" as "ubuntu-12.10"
-enum std::os with parent "ubuntu" as "ubuntu-13.04"
-enum std::os with parent "ubuntu" as "ubuntu-13.10"
-
+ubuntu1204 = std::OS(name = "ubuntu", version = 12.04, family = ubuntu)
+ubuntu1210 = std::OS(name = "ubuntu", version = 12.10, family = ubuntu)
+ubuntu1304 = std::OS(name = "ubuntu", version = 13.04, family = ubuntu)
+ubuntu1310 = std::OS(name = "ubuntu", version = 13.10, family = ubuntu)
+ubuntu1404 = std::OS(name = "ubuntu", version = 14.04, family = ubuntu)

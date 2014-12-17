@@ -178,16 +178,15 @@ class AptPackage(ResourceHandler):
         changes = self.list_changes(resource)
         changed = False
 
-        #env = {"DEBIAN_FRONTEND": "noninteractive"}
-        env = None
+        env = {"DEBIAN_FRONTEND": "noninteractive"}
         if "state" in changes:
             if changes["state"][1] == "removed":
                 self._result(self._io.run("/usr/bin/apt-get", ["-qq", "-y", "remove",
                     resource.name], env))
 
             elif changes["state"][1] == "installed":
-                self._result(self._io.run("/usr/bin/apt-get", ["-qq", "-y", "install",
-                    resource.name], env))
+                self._result(self._io.run("/usr/bin/apt-get", ["-qq", "-y", "--force-yes", 
+                    "install", resource.name], env))
                 changed = True
 
         return changed

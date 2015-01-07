@@ -85,7 +85,7 @@ class UbuntuService(ResourceHandler):
         """
             Reload this resource
         """
-        self._io.run("/sbin/restart", [resource.name])
+        self._io.run("/usr/sbin/service", [resource.name, "restart"])
 
     def do_changes(self, resource):
         style, changes = self._list_changes(resource)
@@ -186,7 +186,7 @@ class AptPackage(ResourceHandler):
                     resource.name], env))
 
             elif changes["state"][1] == "installed":
-                self._result(self._io.run("/usr/bin/apt-get", ["-qq", "--yes", "--force-yes", 
+                self._result(self._io.run("/usr/bin/apt-get", ["-qq", "--yes", "--force-yes",
                     "install", resource.name], env))
                 changed = True
 

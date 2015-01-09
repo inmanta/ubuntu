@@ -16,10 +16,10 @@
     Contect: bart@impera.io
 """
 
-from Imp.resources import Resource, resource, ResourceNotFoundExcpetion
-from Imp.agent.handler import provider, ResourceHandler
-from Imp.execute.util import Unknown
-from Imp.export import resource_to_id
+from impera.resources import Resource, resource, ResourceNotFoundExcpetion
+from impera.agent.handler import provider, ResourceHandler
+from impera.execute.util import Unknown
+from impera.export import resource_to_id
 
 import re, logging, urllib
 

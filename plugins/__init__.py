@@ -32,7 +32,7 @@ class UbuntuService(ResourceHandler):
     """
     def available(self, resource):
         return self._io.file_exists("/usr/lib/upstart") or self._io.file_exists("/usr/sbin/update-rc.d")
-
+    
     def check_resource(self, resource):
         current = resource.clone()
         style = ""
@@ -134,6 +134,18 @@ class AptPackage(ResourceHandler):
 
         TODO: add latest support
     """
+    def __init__(self, agent, io=None):                                                              
+         super().__init__(agent, io)
+         self._updated = False       
+    
+    def pre(self, pre):
+        """
+            Ensure that apt-get update is execute upfront
+        """
+        if not self._updated:
+            self._io.run("/usr/bin/apt-get", ["update"])
+            self._updated = True
+    
     def available(self, resource):
         return (self._io.file_exists("/usr/bin/dpkg")) and self._io.file_exists("/usr/bin/apt-get")
 

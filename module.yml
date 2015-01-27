@@ -4,4 +4,4 @@ name: ubuntu
 source: git@github.com:bartv/imp-ubuntu
 version: 0.1.10
 requires:
-    std: git@github.com:bartv/imp-std, ">= 0.3"
+    std: git@github.com:impera-io/std, ">= 0.3"

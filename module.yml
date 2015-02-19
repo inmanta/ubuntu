@@ -1,7 +1,7 @@
 author: Bart Vanbrabant <bart@impera.io>
 license: Apache 2.0
 name: ubuntu
-source: git@github.com:bartv/imp-ubuntu
-version: 0.1.10
+source: git@git.impera.io:modules/ubuntu
+version: 0.1.11
 requires:
-    std: git@github.com:impera-io/std, ">= 0.3"
+    std: git@git.impera.io:modules/std, ">= 0.4"

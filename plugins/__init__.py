@@ -57,7 +57,7 @@ class UbuntuService(ResourceHandler):
             raise ResourceNotFoundExcpetion("The %s service does not exist" % resource.name)
 
         ctx.set("style", style)
-        return style, current
+        return current
 
     def can_reload(self):
         """
@@ -77,9 +77,9 @@ class UbuntuService(ResourceHandler):
         # update-rc.d foobar defaults
         # update-rc.d -f foobar remove
 
-        if "state" in changes and changes["state"][0] != changes["state"][1]:
+        if "state" in changes and changes["state"]["current"] != changes["state"]["desired"]:
             action = "start"
-            if changes["state"][1] == "stopped":
+            if changes["state"]["desired"] == "stopped":
                 action = "stop"
 
             # start or stop the service
@@ -95,8 +95,8 @@ class UbuntuService(ResourceHandler):
 
             ctx.set_updated()
 
-        if "onboot" in changes and changes["onboot"][0] != changes["onboot"][1]:
-            onboot = changes["onboot"][1]
+        if "onboot" in changes and changes["onboot"]["current"] != changes["onboot"]["desired"]:
+            onboot = changes["onboot"]["desired"]
 
             if style == "upstart":
                 ctx.warn("Enabling or disabling boot for upstart jobs not supported")

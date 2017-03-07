@@ -1,5 +1,5 @@
 """
-    Copyright 2016 Inmanta
+    Copyright 2017 Inmanta
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,16 +15,11 @@
 
     Contact: code@inmanta.com
 """
-
-from inmanta.resources import Resource, resource, ResourceNotFoundExcpetion
+from inmanta.resources import ResourceNotFoundExcpetion
 from inmanta.agent.handler import provider, ResourceHandler
-from inmanta.execute.util import Unknown
 
-import re, logging, urllib
 
-LOGGER = logging.getLogger(__name__)
-
-@provider("std::Service", name = "ubuntu_service")
+@provider("std::Service", name="ubuntu_service")
 class UbuntuService(ResourceHandler):
     """
         A handler for services on systems that use upstart
@@ -32,14 +27,13 @@ class UbuntuService(ResourceHandler):
     def available(self, resource):
         return not self._io.file_exists("/bin/systemctl") and (self._io.file_exists("/usr/lib/upstart") or self._io.file_exists("/usr/sbin/update-rc.d"))
 
-    def check_resource(self, resource):
+    def check_resource(self, ctx, resource):
         current = resource.clone()
         style = ""
         if self._io.file_exists("/etc/init/%s.conf" % resource.name):
             # new style (upstart)
             boot_config = self._io.run("/sbin/initctl", ["show-config", resource.name])[0]
             current.onboot = "start on " in boot_config
-
 
             exists = self._io.run("/sbin/status", [resource.name])
             if "start" in exists[0] or "running" in exists[0]:
@@ -62,16 +56,8 @@ class UbuntuService(ResourceHandler):
         else:
             raise ResourceNotFoundExcpetion("The %s service does not exist" % resource.name)
 
-        return style, current
-
-    def _list_changes(self, desired):
-        style, current = self.check_resource(desired)
-        changes = self._diff(current, desired)
-        return style, changes
-
-    def list_changes(self, desired):
-        style, changes = self._list_changes(desired)
-        return changes
+        ctx.set("style", style)
+        return current
 
     def can_reload(self):
         """
@@ -79,22 +65,21 @@ class UbuntuService(ResourceHandler):
         """
         return True
 
-    def do_reload(self, resource):
+    def do_reload(self, ctx, resource):
         """
             Reload this resource
         """
         self._io.run("/usr/sbin/service", [resource.name, "restart"])
 
-    def do_changes(self, resource):
-        style, changes = self._list_changes(resource)
-        changed = False
+    def do_changes(self, ctx, resource, changes):
+        style = ctx.get("style")
 
         # update-rc.d foobar defaults
         # update-rc.d -f foobar remove
 
-        if "state" in changes and changes["state"][0] != changes["state"][1]:
+        if "state" in changes and changes["state"]["current"] != changes["state"]["desired"]:
             action = "start"
-            if changes["state"][1] == "stopped":
+            if changes["state"]["desired"] == "stopped":
                 action = "stop"
 
             # start or stop the service
@@ -108,13 +93,13 @@ class UbuntuService(ResourceHandler):
                 if result[2] > 0:
                     raise Exception("Unable to %s %s: %s" % (action, resource.name, result[1]))
 
-            changed = True
+            ctx.set_updated()
 
-        if "onboot" in changes and changes["onboot"][0] != changes["onboot"][1]:
-            onboot = changes["onboot"][1]
+        if "onboot" in changes and changes["onboot"]["current"] != changes["onboot"]["desired"]:
+            onboot = changes["onboot"]["desired"]
 
             if style == "upstart":
-                LOGGER.warn("Enabling or disabling boot for upstart jobs not supported")
+                ctx.warn("Enabling or disabling boot for upstart jobs not supported")
 
             elif style == "init":
                 if onboot:
@@ -122,8 +107,4 @@ class UbuntuService(ResourceHandler):
                 else:
                     self._io.run("/usr/sbin/update-rc.d", ["-f", resource.name, "remove"])
 
-                changed = True
-
-        return changed
-
-
+                ctx.set_updated()

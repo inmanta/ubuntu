@@ -30,7 +30,7 @@ class UbuntuService(ResourceHandler):
         A handler for services on systems that use upstart
     """
     def available(self, resource):
-        return self._io.file_exists("/usr/lib/upstart") or self._io.file_exists("/usr/sbin/update-rc.d")
+        return not self._io.file_exists("/bin/systemctl") and (self._io.file_exists("/usr/lib/upstart") or self._io.file_exists("/usr/sbin/update-rc.d"))
 
     def check_resource(self, resource):
         current = resource.clone()

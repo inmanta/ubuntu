@@ -20,8 +20,6 @@ import apt
 ubuntu = std::OS(name="ubuntu", family=std::linux)
 
 ubuntu1404 = std::OS(name="ubuntu", version=14.04, family=ubuntu)
-ubuntu1504 = std::OS(name="ubuntu", version=15.04, family=ubuntu, python_cmd="python3")
 ubuntu1604 = std::OS(name="ubuntu", version=16.04, family=ubuntu, python_cmd="python3")
-ubuntu1704 = std::OS(name="ubuntu", version=17.04, family=ubuntu, python_cmd="python3")
 ubuntu1804 = std::OS(name="ubuntu", version=18.04, family=ubuntu, python_cmd="python3")
 ubuntu1910 = std::OS(name="ubuntu", version=19.10, family=ubuntu, python_cmd="python3")

@@ -22,7 +22,7 @@ from inmanta.resources import ResourceNotFoundExcpetion
 @provider("std::Service", name="ubuntu_service")
 class UbuntuService(ResourceHandler):
     """
-        A handler for services on systems that use upstart
+    A handler for services on systems that use upstart
     """
 
     def available(self, resource):
@@ -74,13 +74,13 @@ class UbuntuService(ResourceHandler):
 
     def can_reload(self):
         """
-            Can this handler reload?
+        Can this handler reload?
         """
         return True
 
     def do_reload(self, ctx, resource):
         """
-            Reload this resource
+        Reload this resource
         """
         self._io.run("/usr/sbin/service", [resource.name, "restart"])
 

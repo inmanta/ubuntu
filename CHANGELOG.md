@@ -1,15 +1,15 @@
-# 0.4.9
+# Changelog
 
 ## v0.4.16 - ?
 
 
-
+## v0.4.9
 - Remove pytest.ini and move its logic to pyproject.toml
-# 0.4.8
+## v0.4.8
 - Add pytest.ini file and set asyncio_mode to auto
-# 0.4.6
+## v0.4.6
 - Use conditional requirement for inmanta-dev-dependencies package
-# 0.4.3
+## v0.4.3
 - Update inmanta-dev-dependencies package
-# 0.4.2
+## v0.4.2
 - Use inmanta-dev-dependencies package

@@ -15,6 +15,7 @@
 
     Contact: code@inmanta.com
 """
+
 from inmanta.agent.handler import ResourceHandler, provider
 from inmanta.resources import ResourceNotFoundExcpetion
 
